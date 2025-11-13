@@ -6,7 +6,7 @@ import ModalHandle from './ModalHandle';
 import TimelineTaskItem from './TimelineTaskItem';
 import IntervalMessage from './IntervalMessage';
 import EmptyState from './EmptyState';
-import TimeRuler from './TimeRuler';
+import CurrentTimeIndicator from './CurrentTimeIndicator';
 
 interface DailyModalProps {
   tasks: Task[];
@@ -14,6 +14,7 @@ interface DailyModalProps {
   sleepTime: string;
   isExpanded: boolean;
   onToggleExpand: () => void;
+  selectedDate?: string; // YYYY-MM-DD format to check if viewing today
 }
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -71,6 +72,7 @@ export default function DailyModal({
   onToggleExpand,
   onTaskToggle,
   onTaskPress,
+  selectedDate,
 }: DailyModalInternalProps) {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT - COLLAPSED_HEIGHT)).current;
   const panStartY = useRef(0);
@@ -175,6 +177,9 @@ export default function DailyModal({
   const totalMinutes = sleepMinutes - wakeMinutes;
   const timelineHeight = totalMinutes * PIXELS_PER_MINUTE;
 
+  // Check if viewing today
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
   return (
     <Animated.View style={[styles.modal, { transform: [{ translateY }] }]}>
       <View style={styles.modalContent}>
@@ -193,6 +198,14 @@ export default function DailyModal({
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
+            {/* Current time indicator - only show when viewing today */}
+            {isToday && (
+              <CurrentTimeIndicator
+                wakeTime={wakeTime}
+                pixelsPerMinute={PIXELS_PER_MINUTE}
+              />
+            )}
+
             {allTasks.map((task, index) => {
               const isSystemTask = task.id === 'wake' || task.id === 'sleep';
               const isFirst = index === 0;

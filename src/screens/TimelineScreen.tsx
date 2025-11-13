@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { Colors } from '@/constants';
 import WeeklyGrid from '@/components/Timeline/WeeklyGrid';
 import DailyModal from '@/components/Timeline/DailyModal';
@@ -12,7 +13,7 @@ import { Task } from '@/types';
 import {
   mockTasks,
   mockSettings,
-  getCurrentWeekDates,
+  getWeekDates,
   getTasksForDate,
 } from '@/components/Timeline/mockData';
 
@@ -21,7 +22,13 @@ import {
  * Shows weekly grid background + sliding daily modal
  */
 export default function TimelineScreen() {
-  const [selectedDate, setSelectedDate] = useState('2025-11-11'); // Default to today
+  // Week navigation state (0 = current week, -1 = last week, +1 = next week)
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Default to today's date in YYYY-MM-DD format
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [isModalExpanded, setIsModalExpanded] = useState(false);
 
   // Task modal context (shared with navigation)
@@ -32,7 +39,9 @@ export default function TimelineScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [pickerIcon, setPickerIcon] = useState('⏰');
   const [pickerColor, setPickerColor] = useState('#4A90E2');
-  const [pickerDate, setPickerDate] = useState('2025-11-11');
+  const [pickerDate, setPickerDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
 
   // Zustand store (will replace mock data when data layer is ready)
   const { toggleCompletion, addTask, updateTask } = useTaskStore();
@@ -55,24 +64,57 @@ export default function TimelineScreen() {
     }
   }, [editModalVisible, editingTask, selectedDate]);
 
-  const weekDates = getCurrentWeekDates();
+  // Calculate week dates based on offset
+  const weekDates = React.useMemo(() => {
+    return getWeekDates(weekOffset);
+  }, [weekOffset]);
+
   // TODO: Replace with Zustand store tasks when data layer is integrated
   const selectedDayTasks = getTasksForDate(selectedDate);
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    // Don't auto-expand - let user swipe to expand
+    // Auto-expand modal to show tasks for selected day
+    setIsModalExpanded(true);
   };
 
   const handleToggleExpand = () => {
     setIsModalExpanded(!isModalExpanded);
   };
 
+  // Week navigation handlers
+  const handlePreviousWeek = () => {
+    setWeekOffset(prev => prev - 1);
+  };
+
+  const handleNextWeek = () => {
+    setWeekOffset(prev => prev + 1);
+  };
+
+  const handleGoToToday = () => {
+    setWeekOffset(0);
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+    setIsModalExpanded(true);
+  };
+
   const handleTaskToggle = async (taskId: string) => {
     try {
+      // Immediate haptic feedback
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
       await toggleCompletion(taskId);
+
+      // Success feedback
+      await Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      );
     } catch (error) {
       console.error('Failed to toggle task:', error);
+
+      // Error feedback
+      await Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Error
+      );
       // TODO: Show error toast
     }
   };
@@ -112,6 +154,10 @@ export default function TimelineScreen() {
         tasks={mockTasks}
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
+        weekOffset={weekOffset}
+        onPreviousWeek={handlePreviousWeek}
+        onNextWeek={handleNextWeek}
+        onGoToToday={handleGoToToday}
       />
 
       {/* Daily Modal (slides up/down) */}
@@ -123,6 +169,7 @@ export default function TimelineScreen() {
         onToggleExpand={handleToggleExpand}
         onTaskToggle={handleTaskToggle}
         onTaskPress={handleTaskPress}
+        selectedDate={selectedDate}
       />
 
       {/* Task Edit Modal */}

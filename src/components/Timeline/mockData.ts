@@ -297,15 +297,33 @@ export function getTasksForDate(date: string): Task[] {
   });
 }
 
-// Helper to get current week dates (Sun-Sat)
+// Helper to get week dates with optional offset (Sun-Sat)
+// offset: 0 = current week, -1 = last week, +1 = next week
+export function getWeekDates(weekOffset: number = 0): string[] {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+
+  // Calculate Sunday of target week
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() - dayOfWeek + (weekOffset * 7));
+
+  // Generate array of 7 dates (Sun-Sat)
+  const weekDates: string[] = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
+
+    // Format as YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    weekDates.push(`${year}-${month}-${day}`);
+  }
+
+  return weekDates;
+}
+
+// Backwards compatibility - get current week dates
 export function getCurrentWeekDates(): string[] {
-  return [
-    '2025-11-09', // Sunday
-    '2025-11-10', // Monday
-    '2025-11-11', // Tuesday (TODAY)
-    '2025-11-12', // Wednesday
-    '2025-11-13', // Thursday
-    '2025-11-14', // Friday
-    '2025-11-15', // Saturday
-  ];
+  return getWeekDates(0);
 }

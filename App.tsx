@@ -21,6 +21,7 @@ export default function App() {
         setIsReady(true);
       } catch (e) {
         setError(e as Error);
+        console.error('Database initialization error:', e);
         // Still set ready to true so we can show error screen
         setIsReady(true);
       }
