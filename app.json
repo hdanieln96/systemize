@@ -19,7 +19,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app does not require photo library access.",
-        "NSCameraUsageDescription": "This app does not require camera access."
+        "NSCameraUsageDescription": "This app does not require camera access.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -37,6 +38,12 @@
     "plugins": [
       "expo-sqlite",
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f66eff5a-5a5b-478e-b81f-e5c4d90641ff"
+      }
+    },
+    "owner": "danieln96"
   }
 }

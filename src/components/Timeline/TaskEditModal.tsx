@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   Animated,
+  PanResponder,
   Dimensions,
   ScrollView,
   TextInput,
@@ -16,6 +17,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants';
 import { Task } from '@/types';
+import ModalHandle from './ModalHandle';
 import ScrollingTimePicker from './ScrollingTimePicker';
 import NotificationSelector from './NotificationSelector';
 
@@ -34,7 +36,7 @@ interface TaskEditModalProps {
 }
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MODAL_HEIGHT = SCREEN_HEIGHT * 0.85; // Reduced from 0.9 to account for bottom nav
+const MODAL_HEIGHT = SCREEN_HEIGHT * 0.95; // Full-screen modal
 
 /**
  * TaskEditModal - Redesigned bottom sheet modal for Timeline tasks
@@ -158,6 +160,32 @@ export default function TaskEditModal({
     }
   }, [visible]);
 
+  // Pan responder for swipe down to dismiss
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return gestureState.dy > 5 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx);
+      },
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dy > 0) {
+          translateY.setValue(SCREEN_HEIGHT - MODAL_HEIGHT + gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dy > 100 || gestureState.vy > 0.5) {
+          handleClose();
+        } else {
+          Animated.spring(translateY, {
+            toValue: SCREEN_HEIGHT - MODAL_HEIGHT,
+            useNativeDriver: true,
+            damping: 20,
+            stiffness: 300,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   const handleClose = () => {
     Keyboard.dismiss();
     Animated.parallel([
@@ -248,18 +276,30 @@ export default function TaskEditModal({
           styles.modalContainer,
           {
             transform: [{ translateY }],
+            paddingBottom: insets.bottom + 16,
           },
         ]}
       >
-            {/* Header with close button */}
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.xs }]} pointerEvents="auto">
+            {/* Handle */}
+            <View {...panResponder.panHandlers} style={styles.handleContainer}>
+              <ModalHandle />
+            </View>
+
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={handleClose}>
+                <Text style={styles.cancelButton}>Cancel</Text>
+              </TouchableOpacity>
               <Text style={styles.headerTitle}>{task ? 'Edit Task' : 'New Task'}</Text>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={handleClose}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Text style={styles.closeButtonText}>✕</Text>
+              <TouchableOpacity onPress={handleSave} disabled={isSaving || !title.trim()}>
+                <Text
+                  style={[
+                    styles.saveButton,
+                    (!title.trim() || isSaving) && styles.saveButtonDisabled,
+                  ]}
+                >
+                  {isSaving ? 'Saving...' : 'Save'}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -361,19 +401,8 @@ export default function TaskEditModal({
                 />
               </View>
 
-              {/* Save Button */}
-              <TouchableOpacity
-                style={[styles.continueButton, { backgroundColor: color }]}
-                onPress={handleSave}
-                disabled={isSaving}
-              >
-                <Text style={styles.continueButtonText}>
-                  {isSaving ? 'Saving...' : 'Save'}
-                </Text>
-              </TouchableOpacity>
-
-              {/* Bottom padding: Safe area + Nav bar height (88px) + breathing room */}
-              <View style={{ height: insets.bottom + 88 + Spacing.lg }} />
+              {/* Bottom padding for scrolling */}
+              <View style={{ height: Spacing.xxl }} />
             </ScrollView>
           </KeyboardAvoidingView>
       </Animated.View>
@@ -392,42 +421,43 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
     height: MODAL_HEIGHT,
-    backgroundColor: Colors.modal.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: Colors.neutral.white,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     ...Shadows.large,
+  },
+  handleContainer: {
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.neutral.mediumGray,
   },
   headerTitle: {
     ...Typography.h3,
-    fontSize: 18,
-    fontWeight: '700',
     color: Colors.text.primary,
-    lineHeight: 32,
-    includeFontPadding: false,
   },
-  closeButton: {
-    position: 'absolute',
-    right: Spacing.lg,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.background.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: '600',
+  cancelButton: {
+    ...Typography.body,
     color: Colors.text.secondary,
-    lineHeight: 20,
+  },
+  saveButton: {
+    ...Typography.body,
+    color: Colors.primary.main,
+    fontWeight: '600',
+  },
+  saveButtonDisabled: {
+    color: Colors.neutral.gray,
   },
   content: {
     flex: 1,
@@ -569,23 +599,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
     minHeight: 80,
-  },
-  continueButton: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.full,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  continueButtonText: {
-    ...Typography.body,
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.neutral.white,
   },
 });

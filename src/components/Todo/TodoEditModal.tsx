@@ -17,7 +17,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants';
 import { Task, Subtask } from '@/types';
-import ModalHandle from '../Timeline/ModalHandle';
 import { getTodayString } from '@utils/timeUtils';
 
 interface TodoEditModalProps {
@@ -32,7 +31,7 @@ interface TodoEditModalProps {
 }
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MODAL_HEIGHT = SCREEN_HEIGHT * 0.9;
+const MODAL_HEIGHT = SCREEN_HEIGHT * 0.95; // Full-screen modal
 
 /**
  * TodoEditModal - Bottom sheet modal for unscheduled todo tasks
@@ -279,13 +278,22 @@ export default function TodoEditModal({
           pointerEvents="auto"
           onStartShouldSetResponder={() => true}
         >
-          <View style={styles.handleContainer} {...panResponder.panHandlers}>
-            <ModalHandle />
-          </View>
-
           {/* Header */}
-          <View style={styles.header} pointerEvents="auto">
+          <View style={styles.header} {...panResponder.panHandlers}>
+            <TouchableOpacity onPress={handleClose}>
+              <Text style={styles.cancelButton}>Cancel</Text>
+            </TouchableOpacity>
             <Text style={styles.headerTitle}>{todo ? 'Edit Todo' : 'New Todo'}</Text>
+            <TouchableOpacity onPress={handleSave} disabled={isSaving || !title.trim()}>
+              <Text
+                style={[
+                  styles.saveButton,
+                  (!title.trim() || isSaving) && styles.saveButtonDisabled,
+                ]}
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <ScrollView
@@ -454,15 +462,7 @@ export default function TodoEditModal({
               />
             </View>
 
-            {/* Save Button */}
-            <TouchableOpacity
-              style={[styles.continueButton, { backgroundColor: color }]}
-              onPress={handleSave}
-              disabled={isSaving}
-            >
-              <Text style={styles.continueButtonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
-            </TouchableOpacity>
-
+            {/* Bottom padding for scrolling */}
             <View style={{ height: Spacing.xxl }} />
           </ScrollView>
         </Animated.View>
@@ -482,28 +482,40 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
     height: MODAL_HEIGHT,
-    backgroundColor: Colors.modal.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: Colors.neutral.white,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     ...Shadows.large,
   },
-  handleContainer: {
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.xs,
-    alignItems: 'center',
-  },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.neutral.mediumGray,
   },
   headerTitle: {
     ...Typography.h3,
-    fontSize: 18,
-    fontWeight: '700',
     color: Colors.text.primary,
+  },
+  cancelButton: {
+    ...Typography.body,
+    color: Colors.text.secondary,
+  },
+  saveButton: {
+    ...Typography.body,
+    color: Colors.primary.main,
+    fontWeight: '600',
+  },
+  saveButtonDisabled: {
+    color: Colors.neutral.gray,
   },
   content: {
     flex: 1,
@@ -745,23 +757,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
     minHeight: 80,
-  },
-  continueButton: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    paddingVertical: Spacing.lg,
-    borderRadius: BorderRadius.full,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  continueButtonText: {
-    ...Typography.body,
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.neutral.white,
   },
 });
