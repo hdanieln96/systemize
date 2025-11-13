@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePlanner - Color Theme Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+            font-size: 36px;
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 60px;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .theme-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .theme-description {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 20px;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .color-swatch {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-label {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 4px;
+            color: #757575;
+        }
+
+        .preview-section {
+            margin-top: 24px;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .ui-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .preview-button {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-button:hover {
+            transform: translateX(4px);
+        }
+
+        .preview-card {
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .pros-cons {
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .pros-cons div {
+            margin-bottom: 8px;
+        }
+
+        .pros {
+            color: #66BB6A;
+        }
+
+        .cons {
+            color: #E57373;
+        }
+
+        /* Current Theme */
+        .current-badge {
+            display: inline-block;
+            background: #FFD700;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* Recommendation */
+        .recommended {
+            border: 3px solid #FFD700;
+            position: relative;
+        }
+
+        .recommended::before {
+            content: '⭐ RECOMMENDED';
+            position: absolute;
+            top: -12px;
+            right: 16px;
+            background: #FFD700;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Choose Your Color Theme</h1>
+
+        <div class="themes-grid">
+            <!-- Current: Coral Pink -->
+            <div class="theme-card">
+                <div class="theme-name">
+                    Coral Pink
+                    <span class="current-badge">CURRENT</span>
+                </div>
+                <div class="theme-description">
+                    Warm, friendly, and energizing. Great for motivation.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #F4A5A5, #FFB6C1);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #81C784;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #E57373;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #F4A5A5, #FFB6C1); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(244, 165, 165, 0.1);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #F4A5A5, #FFB6C1);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Warm and friendly</div>
+                    <div class="pros">✓ Stands out</div>
+                    <div class="cons">✗ May feel too feminine for some</div>
+                    <div class="cons">✗ Not very professional</div>
+                </div>
+            </div>
+
+            <!-- Option 1: Deep Blue (Recommended) -->
+            <div class="theme-card recommended">
+                <div class="theme-name">Deep Ocean Blue</div>
+                <div class="theme-description">
+                    Calm, focused, professional. Perfect for productivity apps.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #4A90E2, #5CA9FB);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #66BB6A;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #FF6B6B;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #4A90E2, #5CA9FB); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(74, 144, 226, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #4A90E2, #5CA9FB);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Professional and trustworthy</div>
+                    <div class="pros">✓ Gender-neutral</div>
+                    <div class="pros">✓ Calming effect</div>
+                    <div class="pros">✓ High contrast for readability</div>
+                </div>
+            </div>
+
+            <!-- Option 2: Purple Gradient -->
+            <div class="theme-card">
+                <div class="theme-name">Vibrant Purple</div>
+                <div class="theme-description">
+                    Creative, inspiring, modern. Great for goal-oriented apps.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #9B59B6, #BB6BD9);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #4CAF50;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #FF5252;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #9B59B6, #BB6BD9); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(155, 89, 182, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #9B59B6, #BB6BD9);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Unique and memorable</div>
+                    <div class="pros">✓ Creative and inspiring</div>
+                    <div class="cons">✗ Can feel overwhelming</div>
+                </div>
+            </div>
+
+            <!-- Option 3: Emerald Green -->
+            <div class="theme-card">
+                <div class="theme-name">Fresh Emerald</div>
+                <div class="theme-description">
+                    Natural, balanced, growth-oriented. Perfect for wellness apps.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #27AE60, #2ECC71);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #4CAF50;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #FF6B6B;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #27AE60, #2ECC71); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(39, 174, 96, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Associated with growth</div>
+                    <div class="pros">✓ Calming and balanced</div>
+                    <div class="cons">✗ May blend with success indicators</div>
+                </div>
+            </div>
+
+            <!-- Option 4: Midnight Dark -->
+            <div class="theme-card">
+                <div class="theme-name">Midnight Slate</div>
+                <div class="theme-description">
+                    Modern, sleek, minimalist. Great for dark mode lovers.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #2C3E50, #34495E);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #1ABC9C;"></div>
+                        <div class="color-label">Accent</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #E74C3C;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #2C3E50, #34495E); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(44, 62, 80, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #2C3E50, #34495E); color: #1ABC9C;">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Very modern and sleek</div>
+                    <div class="pros">✓ Professional</div>
+                    <div class="cons">✗ May feel heavy for daily planner</div>
+                    <div class="cons">✗ Less energizing</div>
+                </div>
+            </div>
+
+            <!-- Option 5: Sunset Orange -->
+            <div class="theme-card">
+                <div class="theme-name">Warm Sunset</div>
+                <div class="theme-description">
+                    Energetic, warm, optimistic. Perfect for morning motivation.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #FF7043, #FFA726);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #66BB6A;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #E57373;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #FF7043, #FFA726); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(255, 112, 67, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #FF7043, #FFA726);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ High energy and motivation</div>
+                    <div class="pros">✓ Warm and inviting</div>
+                    <div class="cons">✗ Can be too intense</div>
+                </div>
+            </div>
+
+            <!-- Option 6: Soft Teal -->
+            <div class="theme-card">
+                <div class="theme-name">Calm Teal</div>
+                <div class="theme-description">
+                    Balanced, peaceful, modern. Great for focus and clarity.
+                </div>
+                <div class="color-palette">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: linear-gradient(135deg, #26A69A, #4DB6AC);"></div>
+                        <div class="color-label">Primary</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #66BB6A;"></div>
+                        <div class="color-label">Success</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="color-swatch" style="background: #EF5350;"></div>
+                        <div class="color-label">Error</div>
+                    </div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-title">UI Preview:</div>
+                    <div class="ui-preview">
+                        <button class="preview-button" style="background: linear-gradient(135deg, #26A69A, #4DB6AC); color: white;">
+                            Create Task
+                        </button>
+                        <div class="preview-card" style="background: rgba(38, 166, 154, 0.08);">
+                            <div class="preview-icon" style="background: linear-gradient(135deg, #26A69A, #4DB6AC);">💧</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">Drink Water</div>
+                                <div style="font-size: 12px; color: #757575;">7:00 AM • Habit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pros-cons">
+                    <div class="pros">✓ Calming and focused</div>
+                    <div class="pros">✓ Modern and clean</div>
+                    <div class="pros">✓ Gender-neutral</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 24px; padding: 32px; margin-top: 40px;">
+            <h2 style="margin-bottom: 24px; color: #333;">My Recommendation: Deep Ocean Blue 🌊</h2>
+            <div style="font-size: 16px; line-height: 1.6; color: #555;">
+                <p style="margin-bottom: 16px;">
+                    For a daily planner app, I strongly recommend <strong>Deep Ocean Blue</strong> because:
+                </p>
+                <ul style="margin-left: 24px; margin-bottom: 16px;">
+                    <li style="margin-bottom: 8px;"><strong>Professional & Trustworthy</strong> - Blue is associated with productivity and organization</li>
+                    <li style="margin-bottom: 8px;"><strong>Gender-Neutral</strong> - Appeals to a wider audience</li>
+                    <li style="margin-bottom: 8px;"><strong>Calming Effect</strong> - Helps with focus without being distracting</li>
+                    <li style="margin-bottom: 8px;"><strong>High Contrast</strong> - Great readability for text and UI elements</li>
+                    <li style="margin-bottom: 8px;"><strong>Versatile</strong> - Works well in both light and dark modes</li>
+                    <li style="margin-bottom: 8px;"><strong>Not Overused</strong> - Stands out from typical pink/purple productivity apps</li>
+                </ul>
+                <p style="margin-bottom: 16px;">
+                    <strong>Color Palette:</strong><br>
+                    Primary: #4A90E2 → #5CA9FB (Blue gradient)<br>
+                    Success: #66BB6A (Green)<br>
+                    Error: #FF6B6B (Red)<br>
+                    Accent: #FFA726 (Warm orange for energy)
+                </p>
+                <p style="margin-bottom: 16px;">
+                    The blue feels productive and organized (perfect for scheduling), while the green success indicators provide positive reinforcement for completed tasks.
+                </p>
+                <p>
+                    <strong>Alternative pick:</strong> If you want something warmer, <strong>Calm Teal</strong> is also excellent - it's modern, peaceful, and has that "morning freshness" vibe that works great for a daily planner.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

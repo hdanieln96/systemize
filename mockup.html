@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LifePlanner - Interactive Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .device-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 15px;
+            font-weight: 600;
+            padding-top: 8px;
+        }
+
+        .status-right {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .header {
+            background: #FFF;
+            padding: 16px 16px 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .date-header {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .date-header .month {
+            color: #F4A5A5;
+        }
+
+        .week-calendar {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .day {
+            text-align: center;
+            min-width: 48px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .day:hover {
+            transform: scale(1.05);
+        }
+
+        .day-name {
+            font-size: 11px;
+            color: #757575;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .day-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+            transition: all 0.2s;
+        }
+
+        .day.today .day-number {
+            background: #F4A5A5;
+            color: #FFF;
+            box-shadow: 0 2px 8px rgba(244, 165, 165, 0.3);
+        }
+
+        .day-icons {
+            display: none;
+        }
+
+        .timeline-container {
+            height: calc(100% - 220px - 64px);
+            overflow-y: auto;
+            padding: 24px 16px;
+            position: relative;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .time-label {
+            position: absolute;
+            left: -60px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #757575;
+            width: 50px;
+            text-align: right;
+        }
+
+        .timeline-node {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #F4A5A5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 3px 8px rgba(244, 165, 165, 0.3);
+            position: relative;
+            border: 3px solid #FFF;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .timeline-node:hover {
+            transform: scale(1.05);
+        }
+
+        .timeline-node.completed {
+            opacity: 0.6;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 28px;
+            height: 28px;
+            background: #81C784;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFF;
+            font-size: 16px;
+            border: 2px solid #FFF;
+        }
+
+        .task-title {
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+
+        .task-subtitle {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .timeline-node.habit {
+            background: #CE93D8;
+            box-shadow: 0 3px 8px rgba(206, 147, 216, 0.3);
+        }
+
+        .timeline-node.timeblock {
+            height: 120px;
+            border-radius: 40px;
+            background: #90CAF9;
+            box-shadow: 0 3px 8px rgba(144, 202, 249, 0.3);
+        }
+
+        .timeline-node.interval {
+            background: #A5D6A7;
+            box-shadow: 0 3px 8px rgba(165, 214, 167, 0.3);
+            width: 60px;
+            height: 60px;
+        }
+
+        .connector {
+            position: absolute;
+            left: 40px;
+            top: 80px;
+            width: 4px;
+            height: 32px;
+            background: #E0E0E0;
+        }
+
+        .connector.dashed {
+            background: linear-gradient(to bottom, #E0E0E0 50%, transparent 50%);
+            background-size: 4px 8px;
+        }
+
+        .interval-message {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #757575;
+            font-style: italic;
+            text-align: center;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #FFF;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #E0E0E0;
+            padding-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #757575;
+            text-decoration: none;
+            font-size: 11px;
+            cursor: pointer;
+            transition: color 0.2s;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #F4A5A5;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .fab-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .fab {
+            position: absolute;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F4A5A5 0%, #FFB6C1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #FFF;
+            box-shadow: 0 8px 24px rgba(244, 165, 165, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 4px solid #FFF;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        .task-card {
+            background: #FFF;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            display: none;
+        }
+
+        .task-card.expanded {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            color: #757575;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: #F4A5A5;
+            color: #FFF;
+        }
+
+        .btn-secondary {
+            background: #E0E0E0;
+            color: #333;
+        }
+
+        .current-time-indicator {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #F4A5A5;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+        }
+
+        .current-time-indicator::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #F4A5A5;
+            border-radius: 50%;
+            border: 2px solid #FFF;
+            margin-left: -6px;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FFF;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+
+        .controls h3 {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #E0E0E0;
+            background: #FFF;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .controls button:hover {
+            background: #F5F5F5;
+        }
+
+        @media (max-width: 480px) {
+            .device-frame {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                padding: 0;
+            }
+
+            .screen {
+                border-radius: 0;
+            }
+
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h3>Interactive Demo</h3>
+        <button onclick="toggleTask(1)">Toggle Task Card</button>
+        <button onclick="completeTask(1)">Complete Task</button>
+        <button onclick="alert('FAB clicked! Opens task creation modal.')">+ Add Task</button>
+    </div>
+
+    <div class="device-frame">
+        <div class="notch"></div>
+        <div class="screen">
+            <div class="status-bar">
+                <div>1:47</div>
+                <div class="status-right">
+                    <span>📶</span>
+                    <span>📡</span>
+                    <span>🔋 89</span>
+                </div>
+            </div>
+
+            <div class="header">
+                <div class="date-header">
+                    November 11, <span class="month">2025</span>
+                </div>
+                <div class="week-calendar">
+                    <div class="day">
+                        <div class="day-name">Sun</div>
+                        <div class="day-number">9</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Mon</div>
+                        <div class="day-number">10</div>
+                    </div>
+                    <div class="day today">
+                        <div class="day-name">Tue</div>
+                        <div class="day-number">11</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Wed</div>
+                        <div class="day-number">12</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Thu</div>
+                        <div class="day-number">13</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Fri</div>
+                        <div class="day-number">14</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Sat</div>
+                        <div class="day-number">15</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline">
+                    <!-- 6:00 AM - Rise and Shine -->
+                    <div class="timeline-item" id="task-1">
+                        <div class="time-label">6:00</div>
+                        <div class="timeline-node completed" onclick="toggleTask(1)">
+                            🔔
+                            <div class="checkmark">✓</div>
+                        </div>
+                        <div class="task-title">Rise and Shine</div>
+                        <div class="connector dashed"></div>
+
+                        <div class="task-card" id="card-1">
+                            <div class="card-header">
+                                <div class="card-title">Rise and Shine</div>
+                                <div>⋯</div>
+                            </div>
+                            <div class="card-meta">
+                                <span>⏰ 6:00 AM</span>
+                                <span>🔁 Daily</span>
+                            </div>
+                            <div style="color: #757575; font-size: 14px; margin-bottom: 8px;">
+                                💤 Interval over. What's next?
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-secondary" onclick="alert('Edit task')">Edit</button>
+                                <button class="btn btn-primary" onclick="completeTask(1)">Undo Complete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interval -->
+                    <div class="timeline-item">
+                        <div class="timeline-node interval">
+                            💤
+                        </div>
+                        <div class="interval-message">Interval over. What's next?</div>
+                        <div class="connector"></div>
+                    </div>
+
+                    <!-- 7:00 AM - Drink Water -->
+                    <div class="timeline-item" id="task-2">
+                        <div class="time-label">7:00</div>
+                        <div class="timeline-node habit" onclick="toggleTask(2)">
+                            💧
+                        </div>
+                        <div class="task-title">Drink water</div>
+                        <div class="connector"></div>
+                    </div>
+
+                    <!-- 7:30 AM - Answer Emails -->
+                    <div class="timeline-item" id="task-3">
+                        <div class="time-label">7:30</div>
+                        <div class="timeline-node timeblock" onclick="toggleTask(3)">
+                            📧
+                        </div>
+                        <div class="task-title">Answer Emails</div>
+                        <div class="task-subtitle">7:30 – 9:00 AM (1 hr, 30 min)</div>
+                        <div class="connector dashed" style="height: 200px;"></div>
+                    </div>
+
+                    <!-- Current Time Indicator -->
+                    <div class="current-time-indicator" style="top: 420px;">
+                        <div style="margin-left: 16px; font-size: 12px; color: #F4A5A5; font-weight: 600;">
+                            1:47 PM
+                        </div>
+                    </div>
+
+                    <!-- Future tasks would continue here -->
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">✓</div>
+                    <div>Todo</div>
+                </a>
+                <a href="#" class="nav-item active">
+                    <div class="nav-icon">📅</div>
+                    <div>Timeline</div>
+                </a>
+                <div class="fab-container">
+                    <div class="fab" onclick="alert('Create new task!')">
+                        +
+                    </div>
+                </div>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div>Habits</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">⚙️</div>
+                    <div>Settings</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTask(taskId) {
+            const card = document.getElementById(`card-${taskId}`);
+            card.classList.toggle('expanded');
+        }
+
+        function completeTask(taskId) {
+            const node = document.querySelector(`#task-${taskId} .timeline-node`);
+            const checkmark = node.querySelector('.checkmark');
+
+            if (node.classList.contains('completed')) {
+                node.classList.remove('completed');
+                if (checkmark) checkmark.remove();
+            } else {
+                node.classList.add('completed');
+                if (!checkmark) {
+                    const check = document.createElement('div');
+                    check.className = 'checkmark';
+                    check.innerHTML = '✓';
+                    node.appendChild(check);
+                }
+            }
+        }
+
+        // Auto-scroll to current time on load
+        window.addEventListener('load', () => {
+            const container = document.querySelector('.timeline-container');
+            const currentTime = document.querySelector('.current-time-indicator');
+            if (currentTime) {
+                const scrollPosition = currentTime.offsetTop - container.offsetHeight / 2;
+                container.scrollTop = scrollPosition;
+            }
+        });
+    </script>
+</body>
+</html>

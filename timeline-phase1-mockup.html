@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePlanner - Timeline Phase 1 Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .device-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Header with Date and Week Calendar */
+        .header {
+            background: #FFF;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .date-header {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .month {
+            color: #F4A5A5;
+        }
+
+        .week-calendar {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .day {
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .day-name {
+            font-size: 11px;
+            color: #757575;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .day-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .day.today .day-number {
+            background: #F4A5A5;
+            color: #FFF;
+            box-shadow: 0 2px 8px rgba(244, 165, 165, 0.3);
+        }
+
+        /* Timeline Container */
+        .timeline-container {
+            height: calc(100% - 200px - 64px);
+            overflow-y: auto;
+            padding: 16px;
+            position: relative;
+        }
+
+        .timeline {
+            position: relative;
+        }
+
+        /* Time Ruler on the left */
+        .timeline-row {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .time-label {
+            width: 60px;
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #757575;
+            padding-top: 4px;
+        }
+
+        .timeline-content {
+            flex: 1;
+            position: relative;
+            padding-left: 24px;
+            border-left: 2px solid #E0E0E0;
+        }
+
+        /* Task Nodes */
+        .task-node {
+            position: relative;
+            background: #FFF;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: -12px;
+        }
+
+        .task-node::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #F4A5A5;
+            border-radius: 50%;
+            border: 3px solid #FFF;
+            box-shadow: 0 0 0 2px #F4A5A5;
+        }
+
+        .task-node:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-node.completed {
+            background: rgba(129, 199, 132, 0.1);
+        }
+
+        .task-node.completed::before {
+            background: #81C784;
+            box-shadow: 0 0 0 2px #81C784;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #F4A5A5, #FFB6C1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #F4A5A5;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox.checked {
+            background: #81C784;
+            border-color: #81C784;
+        }
+
+        .checkmark {
+            color: #FFF;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Time Block (special styling) */
+        .task-node.timeblock {
+            background: linear-gradient(135deg, #FFE5E5, #FFF0F0);
+        }
+
+        .task-node.timeblock .task-icon {
+            background: linear-gradient(135deg, #FF6E40, #FF5722);
+        }
+
+        /* Current Time Indicator */
+        .current-time-indicator {
+            position: absolute;
+            left: 60px;
+            right: 0;
+            height: 2px;
+            background: #FF6E40;
+            box-shadow: 0 0 8px rgba(255, 110, 64, 0.5);
+            z-index: 10;
+        }
+
+        .current-time-indicator::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: -4px;
+            width: 10px;
+            height: 10px;
+            background: #FF6E40;
+            border-radius: 50%;
+            border: 2px solid #FFF;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #FFF;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #E0E0E0;
+            padding-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #757575;
+            text-decoration: none;
+            font-size: 11px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #F4A5A5;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .fab-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .fab {
+            position: absolute;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F4A5A5 0%, #FFB6C1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #FFF;
+            box-shadow: 0 8px 24px rgba(244, 165, 165, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 4px solid #FFF;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: #757575;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtitle {
+            font-size: 14px;
+            color: #757575;
+        }
+
+        /* Annotations for developer reference */
+        .info-panel {
+            background: #FFF;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        .info-panel h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .info-panel h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #F4A5A5;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-panel li {
+            padding: 8px 0;
+            border-bottom: 1px solid #E0E0E0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .info-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .component-box {
+            background: #F5F5F5;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #F4A5A5;
+            color: #FFF;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Device Mockup 1: Normal Timeline -->
+        <div class="device-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <div>9:41</div>
+                    <div>📶 📡 🔋 89</div>
+                </div>
+
+                <div class="header">
+                    <div class="date-header">
+                        November 11, <span class="month">2025</span>
+                    </div>
+                    <div class="week-calendar">
+                        <div class="day">
+                            <div class="day-name">Sun</div>
+                            <div class="day-number">9</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Mon</div>
+                            <div class="day-number">10</div>
+                        </div>
+                        <div class="day today">
+                            <div class="day-name">Tue</div>
+                            <div class="day-number">11</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Wed</div>
+                            <div class="day-number">12</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Thu</div>
+                            <div class="day-number">13</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Fri</div>
+                            <div class="day-number">14</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Sat</div>
+                            <div class="day-number">15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <!-- Current Time Indicator -->
+                    <div class="current-time-indicator" style="top: 190px;"></div>
+
+                    <div class="timeline">
+                        <!-- 6:00 AM - Wake Up -->
+                        <div class="timeline-row">
+                            <div class="time-label">6:00 AM</div>
+                            <div class="timeline-content">
+                                <div class="task-node completed">
+                                    <div class="task-header">
+                                        <div class="task-icon">🔔</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Wake Up</div>
+                                            <div class="task-time">6:00 AM • Alarm</div>
+                                        </div>
+                                        <div class="task-checkbox checked">
+                                            <span class="checkmark">✓</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7:00 AM - Drink Water -->
+                        <div class="timeline-row">
+                            <div class="time-label">7:00 AM</div>
+                            <div class="timeline-content">
+                                <div class="task-node completed">
+                                    <div class="task-header">
+                                        <div class="task-icon">💧</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Drink Water</div>
+                                            <div class="task-time">7:00 AM • Habit • 12 day streak 🔥</div>
+                                        </div>
+                                        <div class="task-checkbox checked">
+                                            <span class="checkmark">✓</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 8:00 AM - Work Block -->
+                        <div class="timeline-row">
+                            <div class="time-label">8:00 AM</div>
+                            <div class="timeline-content">
+                                <div class="task-node timeblock">
+                                    <div class="task-header">
+                                        <div class="task-icon">💼</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Deep Work Session</div>
+                                            <div class="task-time">8:00 AM - 11:00 AM • 3 hours</div>
+                                        </div>
+                                        <div class="task-checkbox">
+                                            <span class="checkmark"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 12:00 PM - Lunch -->
+                        <div class="timeline-row">
+                            <div class="time-label">12:00 PM</div>
+                            <div class="timeline-content">
+                                <div class="task-node">
+                                    <div class="task-header">
+                                        <div class="task-icon">🍱</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Lunch Break</div>
+                                            <div class="task-time">12:00 PM • 1 hour</div>
+                                        </div>
+                                        <div class="task-checkbox">
+                                            <span class="checkmark"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 1:00 PM -->
+                        <div class="timeline-row">
+                            <div class="time-label">1:00 PM</div>
+                            <div class="timeline-content"></div>
+                        </div>
+
+                        <!-- 2:00 PM -->
+                        <div class="timeline-row">
+                            <div class="time-label">2:00 PM</div>
+                            <div class="timeline-content"></div>
+                        </div>
+
+                        <!-- 3:00 PM - Gym -->
+                        <div class="timeline-row">
+                            <div class="time-label">3:00 PM</div>
+                            <div class="timeline-content">
+                                <div class="task-node">
+                                    <div class="task-header">
+                                        <div class="task-icon">🏋️</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Gym Workout</div>
+                                            <div class="task-time">3:00 PM • Habit • 5 day streak 🔥</div>
+                                        </div>
+                                        <div class="task-checkbox">
+                                            <span class="checkmark"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6:00 PM - Dinner -->
+                        <div class="timeline-row">
+                            <div class="time-label">6:00 PM</div>
+                            <div class="timeline-content">
+                                <div class="task-node">
+                                    <div class="task-header">
+                                        <div class="task-icon">🍽️</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Dinner</div>
+                                            <div class="task-time">6:00 PM</div>
+                                        </div>
+                                        <div class="task-checkbox">
+                                            <span class="checkmark"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 10:00 PM - Read -->
+                        <div class="timeline-row">
+                            <div class="time-label">10:00 PM</div>
+                            <div class="timeline-content">
+                                <div class="task-node">
+                                    <div class="task-header">
+                                        <div class="task-icon">📚</div>
+                                        <div class="task-info">
+                                            <div class="task-title">Read Before Bed</div>
+                                            <div class="task-time">10:00 PM • Habit</div>
+                                        </div>
+                                        <div class="task-checkbox">
+                                            <span class="checkmark"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">✓</div>
+                        <div>Todo</div>
+                    </a>
+                    <a href="#" class="nav-item active">
+                        <div class="nav-icon">📅</div>
+                        <div>Timeline</div>
+                    </a>
+                    <div class="fab-container">
+                        <div class="fab">+</div>
+                    </div>
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">🎯</div>
+                        <div>Habits</div>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">⚙️</div>
+                        <div>Settings</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h2>Phase 1: Timeline Implementation</h2>
+            <p style="color: #757575; margin-bottom: 24px;">
+                This mockup shows what we'll build in the next 2 weeks (Phase 1 of the project).
+            </p>
+
+            <h3>✅ Features to Build</h3>
+            <ul>
+                <li><strong>Date Header</strong> - Shows current date with month highlighted</li>
+                <li><strong>Week Calendar Strip</strong> - Navigate between days</li>
+                <li><strong>Time Ruler</strong> - Left side shows hourly timestamps</li>
+                <li><strong>Task Nodes</strong> - Cards showing tasks with icons</li>
+                <li><strong>Completion Toggle</strong> - Tap checkbox to mark done</li>
+                <li><strong>Current Time Indicator</strong> - Red line showing now</li>
+                <li><strong>Task Types</strong> - Alarm, Habit, Time Block</li>
+                <li><strong>Vertical Timeline</strong> - Connected with line + dots</li>
+            </ul>
+
+            <h3>🎨 Visual Elements</h3>
+            <div class="component-box">
+                <strong>Task Node Structure:</strong><br>
+                - Icon (emoji + gradient background)<br>
+                - Title + Time<br>
+                - Checkbox for completion<br>
+                - Dot on timeline ruler<br>
+                - Shadow on hover
+            </div>
+
+            <div class="component-box">
+                <strong>Colors:</strong><br>
+                - Primary: #F4A5A5 (Coral Pink)<br>
+                - Success: #81C784 (Green)<br>
+                - Current Time: #FF6E40 (Orange)<br>
+                - Border: #E0E0E0 (Light Gray)
+            </div>
+
+            <h3>⚙️ Interactions</h3>
+            <ul>
+                <li>Tap checkbox → Toggle completion</li>
+                <li>Tap node → Expand with details</li>
+                <li>Tap day → Switch to that day</li>
+                <li>Tap FAB → Create new task modal</li>
+                <li>Long press node → Edit mode</li>
+                <li>Scroll timeline → See all hours</li>
+            </ul>
+
+            <h3>🗂️ Components to Build</h3>
+            <ul>
+                <li><code>TimelineScreen.tsx</code> <span class="badge">Main</span></li>
+                <li><code>WeekCalendar.tsx</code></li>
+                <li><code>TimeRuler.tsx</code></li>
+                <li><code>TaskNode.tsx</code></li>
+                <li><code>CurrentTimeIndicator.tsx</code></li>
+                <li><code>TaskEditModal.tsx</code></li>
+            </ul>
+
+            <h3>💾 Data Flow</h3>
+            <div class="component-box">
+                SQLite → Zustand Store → Timeline Screen → Task Nodes
+            </div>
+
+            <h3>⏱️ Timeline</h3>
+            <ul>
+                <li><strong>Week 2:</strong> Data layer + Basic UI</li>
+                <li><strong>Week 3:</strong> Interactive nodes + Modal</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

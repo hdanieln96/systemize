@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePlanner - Weekly View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .device-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: #FFF;
+            padding: 16px 16px 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .date-header {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .date-header .month {
+            color: #F4A5A5;
+        }
+
+        .week-calendar {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 12px;
+        }
+
+        .day {
+            text-align: center;
+            min-width: 48px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .day:hover {
+            transform: scale(1.05);
+        }
+
+        .day-name {
+            font-size: 11px;
+            color: #757575;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .day-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+            transition: all 0.2s;
+        }
+
+        .day.today .day-number {
+            background: #F4A5A5;
+            color: #FFF;
+            box-shadow: 0 2px 8px rgba(244, 165, 165, 0.3);
+        }
+
+        /* Weekly Timeline View (Background) */
+        .weekly-timeline {
+            height: calc(100% - 44px - 80px - 64px);
+            overflow-y: auto;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-column {
+            background: #FFF;
+            border-radius: 12px;
+            padding: 8px 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-column:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .day-column.selected {
+            border: 2px solid #F4A5A5;
+            background: #FFF9F9;
+        }
+
+        .day-column-header {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #757575;
+            margin-bottom: 8px;
+        }
+
+        .day-column.today .day-column-header {
+            color: #F4A5A5;
+        }
+
+        .day-column.selected .day-column-header {
+            color: #F4A5A5;
+        }
+
+        .task-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin: 4px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .task-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .task-dot.completed {
+            background: #81C784;
+            color: #FFF;
+        }
+
+        .task-dot.incomplete {
+            background: #E57373;
+            color: #FFF;
+        }
+
+        .task-dot.upcoming {
+            background: #E0E0E0;
+            color: #757575;
+        }
+
+        /* Daily Modal */
+        .daily-modal {
+            position: absolute;
+            bottom: 80px;
+            left: 16px;
+            right: 16px;
+            background: #FFF;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .daily-modal.expanded {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(100% - 150px);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .daily-modal.collapsed {
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #E0E0E0;
+            border-radius: 2px;
+            margin: 12px auto 8px;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            padding: 0 16px 12px;
+            border-bottom: 1px solid #E0E0E0;
+            cursor: pointer;
+        }
+
+        .daily-modal.collapsed .modal-header {
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .modal-subtitle {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .modal-content {
+            overflow-y: auto;
+            padding: 16px;
+            max-height: calc(100% - 100px);
+        }
+
+        .daily-modal.collapsed .modal-content {
+            max-height: 100px;
+            overflow: hidden;
+        }
+
+        .daily-modal.collapsed .timeline-item {
+            display: inline-block;
+            margin-right: 12px;
+            padding-left: 0;
+        }
+
+        .daily-modal.collapsed .time-label {
+            display: none;
+        }
+
+        .daily-modal.collapsed .task-title {
+            display: none;
+        }
+
+        .daily-modal.collapsed .timeline-node {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding-left: 60px;
+        }
+
+        .time-label {
+            position: absolute;
+            left: 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #757575;
+        }
+
+        .timeline-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #F4A5A5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 6px rgba(244, 165, 165, 0.3);
+            border: 2px solid #FFF;
+        }
+
+        .timeline-node.completed {
+            opacity: 0.6;
+        }
+
+        .task-title {
+            display: inline-block;
+            margin-left: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            vertical-align: middle;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #FFF;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #E0E0E0;
+            padding-bottom: 8px;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #757575;
+            text-decoration: none;
+            font-size: 11px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #F4A5A5;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .fab-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .fab {
+            position: absolute;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F4A5A5 0%, #FFB6C1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #FFF;
+            box-shadow: 0 8px 24px rgba(244, 165, 165, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 4px solid #FFF;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FFF;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #E0E0E0;
+            background: #FFF;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .controls button:hover {
+            background: #F5F5F5;
+        }
+
+        @media (max-width: 480px) {
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h3 style="margin-bottom: 12px; font-size: 14px;">Toggle View</h3>
+        <button onclick="toggleModal()">Expand/Collapse Daily View</button>
+    </div>
+
+    <div class="device-frame">
+        <div class="screen">
+            <div class="status-bar">
+                <div>1:47</div>
+                <div>📶 📡 🔋 89</div>
+            </div>
+
+            <div class="header">
+                <div class="date-header">
+                    November <span class="month">2025</span>
+                </div>
+                <div class="week-calendar">
+                    <div class="day">
+                        <div class="day-name">Sun</div>
+                        <div class="day-number">9</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Mon</div>
+                        <div class="day-number">10</div>
+                    </div>
+                    <div class="day today">
+                        <div class="day-name">Tue</div>
+                        <div class="day-number">11</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Wed</div>
+                        <div class="day-number">12</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Thu</div>
+                        <div class="day-number">13</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Fri</div>
+                        <div class="day-number">14</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-name">Sat</div>
+                        <div class="day-number">15</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Timeline (Background) -->
+            <div class="weekly-timeline">
+                <!-- Sunday -->
+                <div class="day-column" onclick="selectDay('Sunday', 9)">
+                    <div class="day-column-header">SUN</div>
+                    <div class="task-dot completed">🔔</div>
+                    <div class="task-dot completed">💧</div>
+                    <div class="task-dot incomplete">🏃</div>
+                    <div class="task-dot completed">📚</div>
+                </div>
+
+                <!-- Monday -->
+                <div class="day-column" onclick="selectDay('Monday', 10)">
+                    <div class="day-column-header">MON</div>
+                    <div class="task-dot completed">🔔</div>
+                    <div class="task-dot completed">💧</div>
+                    <div class="task-dot completed">🏃</div>
+                    <div class="task-dot completed">📚</div>
+                </div>
+
+                <!-- Tuesday (Today) -->
+                <div class="day-column today selected" onclick="selectDay('Tuesday', 11)">
+                    <div class="day-column-header">TUE</div>
+                    <div class="task-dot completed">🔔</div>
+                    <div class="task-dot upcoming">💧</div>
+                    <div class="task-dot upcoming">📧</div>
+                    <div class="task-dot upcoming">🏃</div>
+                </div>
+
+                <!-- Wednesday -->
+                <div class="day-column" onclick="selectDay('Wednesday', 12)">
+                    <div class="day-column-header">WED</div>
+                    <div class="task-dot upcoming">🔔</div>
+                    <div class="task-dot upcoming">💧</div>
+                    <div class="task-dot upcoming">🏃</div>
+                    <div class="task-dot upcoming">📚</div>
+                </div>
+
+                <!-- Thursday -->
+                <div class="day-column" onclick="selectDay('Thursday', 13)">
+                    <div class="day-column-header">THU</div>
+                    <div class="task-dot upcoming">🔔</div>
+                    <div class="task-dot upcoming">💧</div>
+                    <div class="task-dot upcoming">🏃</div>
+                    <div class="task-dot upcoming">📚</div>
+                </div>
+
+                <!-- Friday -->
+                <div class="day-column" onclick="selectDay('Friday', 14)">
+                    <div class="day-column-header">FRI</div>
+                    <div class="task-dot upcoming">🔔</div>
+                    <div class="task-dot upcoming">💧</div>
+                    <div class="task-dot upcoming">🏃</div>
+                    <div class="task-dot upcoming">📚</div>
+                </div>
+
+                <!-- Saturday -->
+                <div class="day-column" onclick="selectDay('Saturday', 15)">
+                    <div class="day-column-header">SAT</div>
+                    <div class="task-dot upcoming">🔔</div>
+                    <div class="task-dot upcoming">💧</div>
+                    <div class="task-dot upcoming">📚</div>
+                </div>
+            </div>
+
+            <!-- Daily Modal (Expandable) -->
+            <div class="daily-modal expanded" id="dailyModal">
+                <div class="modal-handle" onclick="toggleModal()"></div>
+                <div class="modal-header" onclick="toggleModal()">
+                    <div class="modal-title">Tuesday, Nov 11</div>
+                    <div class="modal-subtitle">3 tasks completed • 2 remaining</div>
+                </div>
+                <div class="modal-content">
+                    <div class="timeline-item">
+                        <div class="time-label">6:00</div>
+                        <div class="timeline-node completed">🔔</div>
+                        <span class="task-title" style="text-decoration: line-through; opacity: 0.6;">Wake Up</span>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="time-label">7:00</div>
+                        <div class="timeline-node">💧</div>
+                        <span class="task-title">Drink Water</span>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="time-label">7:30</div>
+                        <div class="timeline-node">📧</div>
+                        <span class="task-title">Answer Emails</span>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="time-label">9:00</div>
+                        <div class="timeline-node">🏃</div>
+                        <span class="task-title">Morning Run</span>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="time-label">22:00</div>
+                        <div class="timeline-node">📚</div>
+                        <span class="task-title">Read Before Bed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">✓</div>
+                    <div>Todo</div>
+                </a>
+                <a href="#" class="nav-item active">
+                    <div class="nav-icon">📅</div>
+                    <div>Timeline</div>
+                </a>
+                <div class="fab-container">
+                    <div class="fab">+</div>
+                </div>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div>Habits</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon">⚙️</div>
+                    <div>Settings</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDay = 'Tuesday';
+
+        function toggleModal() {
+            const modal = document.getElementById('dailyModal');
+            modal.classList.toggle('expanded');
+            modal.classList.toggle('collapsed');
+        }
+
+        function selectDay(dayName, dayNumber) {
+            selectedDay = dayName;
+
+            // Update selected visual state
+            document.querySelectorAll('.day-column').forEach(col => {
+                col.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Update modal header
+            const modalTitle = document.querySelector('.modal-title');
+            const modalSubtitle = document.querySelector('.modal-subtitle');
+            modalTitle.textContent = `${dayName}, Nov ${dayNumber}`;
+
+            // In a real app, you'd load the tasks for that day
+            // For demo, just show that it changed
+            console.log(`Selected: ${dayName}`);
+
+            // Auto-expand modal when day is clicked
+            const modal = document.getElementById('dailyModal');
+            if (modal.classList.contains('collapsed')) {
+                toggleModal();
+            }
+        }
+
+        // Can also collapse on swipe down
+        let startY = 0;
+        const modal = document.getElementById('dailyModal');
+
+        modal.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+
+        modal.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].clientY;
+            const diff = endY - startY;
+
+            if (diff > 100 && modal.classList.contains('expanded')) {
+                toggleModal();
+            } else if (diff < -100 && modal.classList.contains('collapsed')) {
+                toggleModal();
+            }
+        });
+    </script>
+</body>
+</html>

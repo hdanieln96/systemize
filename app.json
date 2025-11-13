@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "lifeplanner-app",
-    "slug": "lifeplanner-app",
+    "name": "Systemize",
+    "slug": "systemize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "systemize",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -13,7 +14,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.danieln96.lifeplannerapp",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app does not require photo library access.",
+        "NSCameraUsageDescription": "This app does not require camera access."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +28,15 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.danieln96.lifeplannerapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-sqlite",
+      "@react-native-community/datetimepicker"
+    ]
   }
 }

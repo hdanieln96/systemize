@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePlanner - Deep Ocean Blue Theme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #E8F4FD 0%, #D1E8FA 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .device-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px 0;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Header */
+        .header {
+            background: #FFF;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            z-index: 100;
+        }
+
+        .date-header {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-header .month {
+            color: #4A90E2;
+        }
+
+        .date-header .arrow {
+            color: #4A90E2;
+            font-size: 24px;
+        }
+
+        .week-calendar {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .day {
+            text-align: center;
+            flex: 1;
+        }
+
+        .day-name {
+            font-size: 11px;
+            color: #757575;
+            margin-bottom: 6px;
+            text-transform: capitalize;
+        }
+
+        .day-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .day.today .day-number {
+            background: linear-gradient(135deg, #4A90E2, #5CA9FB);
+            color: #FFF;
+        }
+
+        /* Weekly Grid Background */
+        .weekly-grid {
+            display: flex;
+            gap: 4px;
+            padding: 16px 8px;
+            height: calc(100% - 200px - 64px);
+            overflow-y: auto;
+        }
+
+        .day-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .task-icon-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: rgba(74, 144, 226, 0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-icon-small.completed {
+            background: rgba(102, 187, 106, 0.3);
+        }
+
+        .task-icon-small.upcoming {
+            background: rgba(224, 224, 224, 0.5);
+        }
+
+        .task-icon-small.block {
+            height: 64px;
+            border-radius: 16px;
+        }
+
+        /* Daily Modal */
+        .daily-modal {
+            position: absolute;
+            bottom: 64px;
+            left: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #E0E0E0;
+            border-radius: 2px;
+            margin: 12px auto 8px;
+            cursor: grab;
+        }
+
+        .modal-content {
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        /* Timeline Items */
+        .timeline {
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .time-label {
+            width: 60px;
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 500;
+            color: #757575;
+            padding-top: 8px;
+        }
+
+        .timeline-track {
+            flex: 1;
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: -8px;
+            width: 2px;
+            background: #E0E0E0;
+        }
+
+        /* Node - Circular (Instant Task) */
+        .task-node {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .node-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #4A90E2, #5CA9FB);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .node-icon.completed {
+            background: linear-gradient(135deg, #66BB6A, #4CAF50);
+        }
+
+        /* Extended Block (Time Block) */
+        .task-block {
+            width: 64px;
+            background: linear-gradient(135deg, #4A90E2, #5CA9FB);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #757575;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            color: #757575;
+        }
+
+        .task-checkbox {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #4A90E2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .task-checkbox.checked {
+            background: #66BB6A;
+            border-color: #66BB6A;
+            color: #FFF;
+            font-size: 18px;
+        }
+
+        /* Interval Messages */
+        .interval-message {
+            margin: 8px 0 8px 80px;
+            font-size: 12px;
+            color: #BDBDBD;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Current Time Indicator */
+        .current-time-badge {
+            margin: 16px 0 16px 80px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #FFA726;
+        }
+
+        /* Add Task Button */
+        .add-task-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(74, 144, 226, 0.1);
+            color: #4A90E2;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 16px 80px;
+            cursor: pointer;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #FFF;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #E0E0E0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #757575;
+            text-decoration: none;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #4A90E2;
+        }
+
+        .nav-icon {
+            font-size: 22px;
+        }
+
+        .fab-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .fab {
+            position: absolute;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4A90E2 0%, #5CA9FB 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #FFF;
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
+            cursor: pointer;
+            border: 4px solid #FFF;
+        }
+
+        /* Dashed connector line */
+        .connector-dashed {
+            position: absolute;
+            left: 40px;
+            top: 64px;
+            width: 2px;
+            height: 40px;
+            background: repeating-linear-gradient(
+                to bottom,
+                #E0E0E0 0,
+                #E0E0E0 4px,
+                transparent 4px,
+                transparent 8px
+            );
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Device: Expanded Modal with Blue Theme -->
+        <div class="device-frame">
+            <div class="screen">
+                <div class="status-bar">
+                    <div>1:47</div>
+                    <div>📶 📡 🔋 89</div>
+                </div>
+
+                <div class="header">
+                    <div class="date-header">
+                        November 11, <span class="month">2025</span> <span class="arrow">❯</span>
+                    </div>
+                    <div class="week-calendar">
+                        <div class="day">
+                            <div class="day-name">Sun</div>
+                            <div class="day-number">9</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Mon</div>
+                            <div class="day-number">10</div>
+                        </div>
+                        <div class="day today">
+                            <div class="day-name">Tue</div>
+                            <div class="day-number">11</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Wed</div>
+                            <div class="day-number">12</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Thu</div>
+                            <div class="day-number">13</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Fri</div>
+                            <div class="day-number">14</div>
+                        </div>
+                        <div class="day">
+                            <div class="day-name">Sat</div>
+                            <div class="day-number">15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Modal - Expanded -->
+                <div class="daily-modal" style="height: calc(100% - 200px); bottom: 0; border-radius: 24px 24px 0 0;">
+                    <div class="modal-handle"></div>
+                    <div class="modal-content">
+                        <div class="timeline">
+                            <!-- 6:00 AM - Wake Up (Completed) -->
+                            <div class="timeline-item">
+                                <div class="time-label">6:00</div>
+                                <div class="timeline-track">
+                                    <div class="task-node">
+                                        <div class="node-icon completed">🔔</div>
+                                        <div class="task-info">
+                                            <div class="task-time">6:00 AM ↻</div>
+                                            <div class="task-title completed">Rise and Shine</div>
+                                        </div>
+                                        <div class="task-checkbox checked">✓</div>
+                                    </div>
+                                    <div class="connector-dashed"></div>
+                                </div>
+                            </div>
+
+                            <!-- Interval Message -->
+                            <div class="interval-message">
+                                💤 Interval over. What's next?
+                            </div>
+
+                            <!-- 7:00 AM - Drink Water -->
+                            <div class="timeline-item">
+                                <div class="time-label">7:00</div>
+                                <div class="timeline-track">
+                                    <div class="task-node">
+                                        <div class="node-icon">💧</div>
+                                        <div class="task-info">
+                                            <div class="task-time">7:00 AM</div>
+                                            <div class="task-title">Drink water</div>
+                                        </div>
+                                        <div class="task-checkbox"></div>
+                                    </div>
+                                    <div class="connector-dashed"></div>
+                                </div>
+                            </div>
+
+                            <!-- Interval Message -->
+                            <div class="interval-message">
+                                💤 Reflect on the respite.
+                            </div>
+
+                            <!-- 7:30-9:00 AM - Answer Emails (Extended Block) -->
+                            <div class="timeline-item">
+                                <div class="time-label">7:30</div>
+                                <div class="timeline-track">
+                                    <div class="task-node">
+                                        <div class="task-block" style="height: 180px;">
+                                            <div>📧</div>
+                                        </div>
+                                        <div class="task-info">
+                                            <div class="task-time">7:30 – 9:00 AM (1 hr, 30 min)</div>
+                                            <div class="task-title">Answer Emails</div>
+                                        </div>
+                                        <div class="task-checkbox"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Current Time Indicator -->
+                            <div class="current-time-badge">
+                                <span style="font-size: 16px;">⏰</span>
+                                <span>Next up in <strong>8h 13m</strong>. Ready?</span>
+                            </div>
+
+                            <!-- Add Task Button -->
+                            <div class="add-task-button">
+                                <span>➕</span>
+                                <span>Add Task</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">📥</div>
+                        <div>Inbox</div>
+                    </a>
+                    <a href="#" class="nav-item active">
+                        <div class="nav-icon">📊</div>
+                        <div>Timeline</div>
+                    </a>
+                    <div class="fab-container">
+                        <div class="fab">+</div>
+                    </div>
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">✨</div>
+                        <div>AI</div>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <div class="nav-icon">⚙️</div>
+                        <div>Settings</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Palette Reference -->
+        <div style="background: white; border-radius: 24px; padding: 24px; width: 300px; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);">
+            <h2 style="margin-bottom: 20px; color: #333; font-size: 24px;">🌊 Deep Ocean Blue</h2>
+
+            <div style="margin-bottom: 24px;">
+                <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px;">Primary Colors</div>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <div style="flex: 1;">
+                        <div style="width: 100%; height: 48px; background: #4A90E2; border-radius: 8px;"></div>
+                        <div style="font-size: 11px; color: #757575; text-align: center; margin-top: 4px;">#4A90E2<br>Main</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="width: 100%; height: 48px; background: #7DB3F5; border-radius: 8px;"></div>
+                        <div style="font-size: 11px; color: #757575; text-align: center; margin-top: 4px;">#7DB3F5<br>Light</div>
+                    </div>
+                </div>
+                <div style="width: 100%; height: 48px; background: linear-gradient(135deg, #4A90E2, #5CA9FB); border-radius: 8px; margin-bottom: 4px;"></div>
+                <div style="font-size: 11px; color: #757575; text-align: center;">Gradient</div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px;">Semantic Colors</div>
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;">
+                        <div style="width: 100%; height: 48px; background: #66BB6A; border-radius: 8px;"></div>
+                        <div style="font-size: 11px; color: #757575; text-align: center; margin-top: 4px;">Success</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="width: 100%; height: 48px; background: #FF6B6B; border-radius: 8px;"></div>
+                        <div style="font-size: 11px; color: #757575; text-align: center; margin-top: 4px;">Error</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="width: 100%; height: 48px; background: #FFA726; border-radius: 8px;"></div>
+                        <div style="font-size: 11px; color: #757575; text-align: center; margin-top: 4px;">Accent</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 16px; background: #F0F7FF; border-radius: 12px; font-size: 13px; line-height: 1.6; color: #555;">
+                <strong style="color: #4A90E2;">✓ Professional</strong><br>
+                <strong style="color: #4A90E2;">✓ Gender-neutral</strong><br>
+                <strong style="color: #4A90E2;">✓ Calming</strong><br>
+                <strong style="color: #4A90E2;">✓ Great contrast</strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
