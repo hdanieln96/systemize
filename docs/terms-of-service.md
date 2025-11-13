@@ -154,8 +154,8 @@ Our failure to enforce any right or provision of these Terms shall not constitut
 
 For questions about these Terms, contact us:
 
-**Email:** [your-email@example.com]
-**GitHub:** https://github.com/[your-username]/systemize
+**Email:** dlitelxs@gmail.com
+**GitHub:** https://github.com/hdanieln96/systemize
 
 ## 20. App Store Terms
 

@@ -115,7 +115,7 @@ Currently, Systemize stores all data locally on your device. Cloud sync is not a
 We'd love to hear from you!
 
 ### Report a Bug
-**Email:** [your-email@example.com]
+**Email:** dlitelxs@gmail.com
 
 Please include:
 - iOS version
@@ -125,7 +125,7 @@ Please include:
 - Screenshots if applicable
 
 ### Request a Feature
-**GitHub Issues:** https://github.com/[your-username]/systemize/issues
+**GitHub Issues:** https://github.com/hdanieln96/systemize/issues
 
 Or email us with:
 - Feature description
@@ -189,8 +189,8 @@ The power is in consistency. Follow your system even when you don't feel like it
 
 ## Contact Us
 
-**Email:** [your-email@example.com]
-**GitHub:** https://github.com/[your-username]/systemize
+**Email:** dlitelxs@gmail.com
+**GitHub:** https://github.com/hdanieln96/systemize
 **Twitter:** [@systemize_app] (optional)
 
 **Response Time:** We typically respond within 24-48 hours.

@@ -96,8 +96,8 @@ Since we don't collect or store your data:
 
 If you have questions about this Privacy Policy, please contact us:
 
-**Email:** [your-email@example.com]
-**GitHub:** https://github.com/[your-username]/systemize
+**Email:** dlitelxs@gmail.com
+**GitHub:** https://github.com/hdanieln96/systemize
 
 ## Legal Compliance
 

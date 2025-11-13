@@ -39,7 +39,7 @@ This directory contains all the policy pages and documentation for the Systemize
 
 4. **Your site will be live at:**
    ```
-   https://[your-username].github.io/systemize/
+   https://hdanieln96.github.io/systemize/
    ```
 
 ### Option 2: Create a dedicated repo
@@ -59,22 +59,22 @@ Once deployed, use these URLs in App Store Connect:
 
 **Privacy Policy URL:**
 ```
-https://[your-username].github.io/systemize/privacy-policy.html
+https://hdanieln96.github.io/systemize/privacy-policy.html
 ```
 
 **Terms of Service URL:**
 ```
-https://[your-username].github.io/systemize/terms-of-service.html
+https://hdanieln96.github.io/systemize/terms-of-service.html
 ```
 
 **Support URL:**
 ```
-https://[your-username].github.io/systemize/support.html
+https://hdanieln96.github.io/systemize/support.html
 ```
 
 **Marketing URL (optional):**
 ```
-https://[your-username].github.io/systemize/
+https://hdanieln96.github.io/systemize/
 ```
 
 ## ✏️ Customization Required
@@ -82,10 +82,10 @@ https://[your-username].github.io/systemize/
 Before deploying, replace the following placeholders in ALL files:
 
 ### Email Address
-Replace `[your-email@example.com]` with your actual support email.
+Replace `dlitelxs@gmail.com` with your actual support email.
 
 ### GitHub Username
-Replace `[your-username]` with your actual GitHub username.
+Replace `hdanieln96` with your actual GitHub username.
 
 ### Optional Updates
 - **Jurisdiction** (in terms-of-service): Replace `[Your State/Country]` with your location
@@ -142,8 +142,8 @@ To change colors, update the `<style>` sections in each HTML file.
 
 ## ✅ Checklist Before Deployment
 
-- [ ] Replace `[your-email@example.com]` with real email
-- [ ] Replace `[your-username]` with GitHub username
+- [ ] Replace `dlitelxs@gmail.com` with real email
+- [ ] Replace `hdanieln96` with GitHub username
 - [ ] Update jurisdiction in Terms of Service
 - [ ] Test all pages locally
 - [ ] Check all internal links work
